@@ -1,0 +1,20 @@
+{
+  "name": "tp-prog4-node",
+  "version": "1.0.0",
+  "description": "Backend Node.js - TP Final Programación IV",
+  "scripts": {
+    "start": "node src/servidor.js",
+    "dev": "node --watch src/servidor.js",
+    "setup": "node src/infra/db/setup.js",
+    "test": "node --test tests/**/*.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "express": "^4.19.2",
+    "pg": "^8.11.3",
+    "dotenv": "^16.4.5",
+    "joi": "^17.12.2",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
