@@ -1,5 +1,7 @@
 // Caso de uso: Cancelar turno
-// Devuelve el crédito si está dentro de la ventana permitida.
+// - Devuelve el crédito si está dentro de la ventana permitida.
+// - Idempotente: dos cancelaciones de la misma reserva devuelven un solo crédito.
+// - Fuera de ventana: el crédito se pierde y se registra la ausencia con motivo.
 
 export class CancelarTurno {
   constructor({ reservaRepo, alumnoRepo, creditoRepo, configuracionRepo }) {
@@ -13,7 +15,16 @@ export class CancelarTurno {
     const reserva = await this.reservaRepo.obtenerPorId(reservaId);
     if (!reserva) throw new Error('Reserva no encontrada');
     if (reserva.alumnoId !== alumnoId) throw new Error('No es titular de la reserva');
-    if (reserva.estado !== 'confirmada') throw new Error('Solo se pueden cancelar reservas confirmadas');
+
+    // Idempotencia: si ya está cancelada, no se devuelve otro crédito.
+    if (reserva.estado !== 'confirmada') {
+      return {
+        cancelada: true,
+        creditoDevuelto: false,
+        yaCancelada: true,
+        motivo: `Reserva ya estaba ${reserva.estado}`,
+      };
+    }
 
     const ventanaHoras = await this.configuracionRepo.obtenerVentanaCancelacionHoras();
     const ahora = new Date();
@@ -30,6 +41,14 @@ export class CancelarTurno {
         motivo: 'Cancelación dentro de ventana',
       });
       seDevuelveCredito = true;
+    } else {
+      // Fuera de ventana: el crédito se pierde y se registra la ausencia con motivo.
+      await this.creditoRepo.registrar({
+        alumnoId,
+        cantidad: 0,
+        tipo: 'ausencia',
+        motivo: 'Cancelación fuera de ventana',
+      });
     }
 
     await this.reservaRepo.actualizarEstado(reservaId, 'cancelada');
