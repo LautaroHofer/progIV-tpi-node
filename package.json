@@ -2,11 +2,15 @@
   "name": "tp-prog4-node",
   "version": "1.0.0",
   "description": "Backend Node.js - TP Final Programación IV",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "start": "node src/servidor.js",
     "dev": "node --watch src/servidor.js",
     "setup": "node src/infra/db/setup.js",
-    "test": "node --test tests/**/*.js"
+    "test": "node --test tests/**/*.js",
+    "lint": "node --check src/servidor.js"
   },
   "type": "module",
   "dependencies": {
