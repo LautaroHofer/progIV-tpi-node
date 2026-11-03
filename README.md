@@ -43,7 +43,6 @@ Ver documentación detallada en `docs/api.md`.
 ### Salud y disponibilidad
 - `GET /health`
 - `GET /ready`
-- `GET /salud`
 
 ### Sucursales y Salas
 - `POST /api/sucursales`
