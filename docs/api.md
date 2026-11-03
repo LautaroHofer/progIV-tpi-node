@@ -7,7 +7,6 @@ Base URL: `http://localhost:3000`
 |--------|----------|-------------|
 | GET | `/health` | Proceso vivo |
 | GET | `/ready` | Listo para recibir peticiones |
-| GET | `/salud` | Estado del servicio |
 
 ## Sucursales
 | Método | Endpoint | Descripción |
