@@ -5,7 +5,7 @@ import {
   obtenerSala,
   actualizarSala,
   eliminarSala,
-} from '../controladores/salaControlador.js';
+} from '../controllers/salaControlador.js';
 
 const router = express.Router();
 

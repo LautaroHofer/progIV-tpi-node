@@ -5,7 +5,7 @@ import {
   obtenerAlumno,
   actualizarAlumno,
   eliminarAlumno,
-} from '../controladores/alumnoControlador.js';
+} from '../controllers/alumnoControlador.js';
 
 const router = express.Router();
 

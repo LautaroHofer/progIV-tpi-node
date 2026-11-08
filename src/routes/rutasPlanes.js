@@ -5,7 +5,7 @@ import {
   obtenerPlan,
   actualizarPlan,
   eliminarPlan,
-} from '../controladores/planControlador.js';
+} from '../controllers/planControlador.js';
 
 const router = express.Router();
 

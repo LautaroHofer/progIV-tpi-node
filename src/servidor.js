@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { crearApp } from './infra/http/app.js';
+import { crearApp } from './app.js';
 
 dotenv.config();
 

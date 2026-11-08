@@ -2,7 +2,7 @@ import express from 'express';
 import {
   enviarRecordatorio,
   avisarLugarDisponible,
-} from '../controladores/notificacionControlador.js';
+} from '../controllers/notificacionControlador.js';
 
 const router = express.Router();
 

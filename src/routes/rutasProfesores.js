@@ -6,7 +6,7 @@ import {
   actualizarProfesor,
   eliminarProfesor,
   obtenerAgenda,
-} from '../controladores/profesorControlador.js';
+} from '../controllers/profesorControlador.js';
 
 const router = express.Router();
 
