@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node src/servidor.js",
     "dev": "node --watch src/servidor.js",
-    "setup": "node src/infra/db/setup.js",
+    "setup": "node src/db/setup.js",
     "test": "node --test tests/**/*.js",
     "lint": "node --check src/servidor.js"
   },
