@@ -4,7 +4,7 @@ import {
   agregarCredito,
   descontarCredito,
   historialCreditos,
-} from '../controladores/creditoControlador.js';
+} from '../controllers/creditoControlador.js';
 
 const router = express.Router();
 

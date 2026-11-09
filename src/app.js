@@ -1,11 +1,11 @@
 import express from 'express';
-import rutasSucursales from './rutas/rutasSucursales.js';
-import rutasSalas from './rutas/rutasSalas.js';
-import rutasProfesores from './rutas/rutasProfesores.js';
-import rutasPlanes from './rutas/rutasPlanes.js';
-import rutasCreditos from './rutas/rutasCreditos.js';
-import rutasNotificaciones from './rutas/rutasNotificaciones.js';
-import rutasAlumnos from './rutas/rutasAlumnos.js';
+import rutasSucursales from './routes/rutasSucursales.js';
+import rutasSalas from './routes/rutasSalas.js';
+import rutasProfesores from './routes/rutasProfesores.js';
+import rutasPlanes from './routes/rutasPlanes.js';
+import rutasCreditos from './routes/rutasCreditos.js';
+import rutasNotificaciones from './routes/rutasNotificaciones.js';
+import rutasAlumnos from './routes/rutasAlumnos.js';
 import { manejadorErrores } from './middlewares/error.js';
 
 export function crearApp() {

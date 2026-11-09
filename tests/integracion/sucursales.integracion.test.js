@@ -1,5 +1,5 @@
 import { test, assert } from 'node:test';
-import { pool } from '../../src/infra/db/conexion.js';
+import { pool } from '../../src/db/conexion.js';
 
 test('integración: se puede consultar sucursales', async () => {
   const client = await pool.connect();

@@ -3,7 +3,7 @@ import {
   crearSucursal,
   listarSucursales,
   obtenerSucursal,
-} from '../controladores/sucursalControlador.js';
+} from '../controllers/sucursalControlador.js';
 
 const router = express.Router();
 
