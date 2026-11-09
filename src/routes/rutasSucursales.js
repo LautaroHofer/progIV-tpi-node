@@ -1,4 +1,5 @@
 import express from 'express';
+import { validarEsquema } from '../middlewares/validacion.js';
 import {
   crearSucursal,
   listarSucursales,
@@ -7,7 +8,7 @@ import {
 
 const router = express.Router();
 
-router.post('/', crearSucursal);
+router.post('/', validarEsquema('sucursal'), crearSucursal);
 router.get('/', listarSucursales);
 router.get('/:id', obtenerSucursal);
 
