@@ -1,4 +1,5 @@
 import express from 'express';
+import { validarEsquema } from '../middlewares/validacion.js';
 import {
   enviarRecordatorio,
   avisarLugarDisponible,
@@ -6,7 +7,11 @@ import {
 
 const router = express.Router();
 
-router.post('/recordatorio', enviarRecordatorio);
-router.post('/lugar-disponible', avisarLugarDisponible);
+router.post('/recordatorio', validarEsquema('notificacion'), enviarRecordatorio);
+router.post(
+  '/lugar-disponible',
+  validarEsquema('notificacion'),
+  avisarLugarDisponible,
+);
 
 export default router;

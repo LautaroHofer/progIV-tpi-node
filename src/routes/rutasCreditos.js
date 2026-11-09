@@ -1,4 +1,5 @@
 import express from 'express';
+import { validarEsquema } from '../middlewares/validacion.js';
 import {
   obtenerCreditos,
   agregarCredito,
@@ -9,8 +10,8 @@ import {
 const router = express.Router();
 
 router.get('/:alumnoId', obtenerCreditos);
-router.post('/:alumnoId/agregar', agregarCredito);
-router.post('/:alumnoId/descontar', descontarCredito);
+router.post('/:alumnoId/agregar', validarEsquema('credito'), agregarCredito);
+router.post('/:alumnoId/descontar', validarEsquema('credito'), descontarCredito);
 router.get('/:alumnoId/historial', historialCreditos);
 
 export default router;
