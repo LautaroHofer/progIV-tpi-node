@@ -1,4 +1,5 @@
 import express from 'express';
+import { validarEsquema } from '../middlewares/validacion.js';
 import {
   crearProfesor,
   listarProfesores,
@@ -10,10 +11,10 @@ import {
 
 const router = express.Router();
 
-router.post('/', crearProfesor);
+router.post('/', validarEsquema('profesor'), crearProfesor);
 router.get('/', listarProfesores);
 router.get('/:id', obtenerProfesor);
-router.put('/:id', actualizarProfesor);
+router.put('/:id', validarEsquema('profesor'), actualizarProfesor);
 router.delete('/:id', eliminarProfesor);
 router.get('/:id/agenda', obtenerAgenda);
 
