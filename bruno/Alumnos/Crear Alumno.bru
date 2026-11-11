@@ -1,0 +1,18 @@
+meta {
+  name: Crear Alumno
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/alumnos
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nombre": "Ana García",
+    "email": "ana.garcia@ejemplo.com"
+  }
+}
