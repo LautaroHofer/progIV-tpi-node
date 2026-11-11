@@ -19,7 +19,7 @@ export function validarEsquema(nombreEsquema) {
 
     const { error, value } = esquema.validate(req.body, {
       abortEarly: false,
-      stripUnknown: true,
+      stripUnknown: false,
     });
 
     if (error) {

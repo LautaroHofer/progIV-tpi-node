@@ -12,7 +12,7 @@ export const schemas = {
   }),
 
   sala: Joi.object({
-    sucursal_id: Joi.number().integer().positive().required(),
+    sucursal_id: Joi.string().trim().required(),
     nombre: Joi.string().min(1).max(100).required(),
     capacidad: Joi.number().integer().min(1).required(),
   }),
@@ -35,13 +35,13 @@ export const schemas = {
   }),
 
   credito: Joi.object({
-    cantidad: Joi.number().integer().required(),
+    cantidad: Joi.number().integer().positive().required(),
     tipo: Joi.string().valid('credito', 'debito').required(),
     motivo: Joi.string().allow('', null).optional(),
   }),
 
   notificacion: Joi.object({
-    alumno_id: Joi.number().integer().positive().required(),
+    alumno_id: Joi.string().trim().required(),
     tipo: Joi.string().min(1).max(50).required(),
     mensaje: Joi.string().min(1).required(),
   }),
