@@ -16,3 +16,12 @@ body:json {
     "email": "ana.garcia@ejemplo.com"
   }
 }
+
+tests {
+  test("status code is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  if (res.body && res.body.id) {
+    bru.setVar("alumnoId", res.body.id);
+  }
+}
