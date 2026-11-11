@@ -1,15 +1,8 @@
-import { test } from "node:test";
-import assert from "node:assert";
-import { pool } from "../../src/db/conexion.js";
+import { test } from 'node:test';
+import assert from 'node:assert';
+import { db } from '../../src/db/conexion.js';
 
-// TODO: implementar Firebase, no es con SQL
-
-// test("integración: se puede consultar sucursales", async () => {
-//   const client = await pool.connect();
-//   try {
-//     const result = await client.query("SELECT COUNT(*) FROM sucursales");
-//     assert.ok(Number(result.rows[0].count) >= 0);
-//   } finally {
-//     client.release();
-//   }
-// });
+test('integración: la instancia de Firestore está inicializada', () => {
+  assert.ok(db, 'La instancia de Firestore debe estar definida');
+  assert.strictEqual(typeof db.collection, 'function', 'db debe tener el método collection()');
+});
