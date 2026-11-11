@@ -19,7 +19,9 @@
     "test": "node --test tests/**/*.js",
     "lint": "node --check src/servidor.js",
     "deploy": "firebase deploy",
-    "prepare": "husky"
+    "deploy:uat": "firebase deploy --only functions:apiUat,hosting:uat",
+    "deploy:prod": "firebase deploy --only functions:api,hosting:prod",
+    "prepare": "node -e \"if (process.env.NODE_ENV !== 'production') { try { (await import('husky')).default(); } catch (e) {} }\""
   },
   "type": "module",
   "dependencies": {
