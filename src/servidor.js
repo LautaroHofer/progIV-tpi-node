@@ -1,14 +1,14 @@
-import express from 'express';
-import dotenv from 'dotenv';
 import { crearApp } from './app.js';
+import { config, validarVariablesEntorno } from './config/env.js';
 
-dotenv.config();
+validarVariablesEntorno();
 
 const app = crearApp();
-const PORT = process.env.PORT || 3000;
+const PORT = config.port;
 
 const server = app.listen(PORT, () => {
   console.log(`API Node.js escuchando en http://localhost:${PORT}`);
+  console.log(`[Ambiente: ${config.env.toUpperCase()} | Firestore DB: ${config.firebase.databaseId}]`);
 });
 
 export { server };

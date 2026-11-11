@@ -1,8 +1,11 @@
 import { db } from './conexion.js';
+import { config } from '../config/env.js';
 
 async function setup() {
   try {
-    console.log('Inicializando colecciones y configuración base en Firestore...');
+    console.log(
+      `Inicializando colecciones y configuración base en Firestore [Ambiente: ${config.env.toUpperCase()} | DB: ${config.firebase.databaseId}]...`
+    );
 
     // Inicializar documento de configuración general
     const configDoc = db.collection('configuracion').doc('general');

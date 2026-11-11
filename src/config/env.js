@@ -3,17 +3,49 @@ import dotenv from 'dotenv';
 import path from 'node:path';
 import fs from 'node:fs';
 
-const nodeEnv = process.env.NODE_ENV || 'development';
+// 1. Detectar ambiente por flags de línea de comando (--dev, --uat, --prod) o variable NODE_ENV
+let nodeEnv = process.env.NODE_ENV || 'development';
 
-// 1. Cargar archivo específico de ambiente si existe (.env.uat, .env.production, .env.test)
+if (process.argv.includes('--prod') || process.argv.includes('--production')) {
+  nodeEnv = 'production';
+} else if (process.argv.includes('--uat') || process.argv.includes('--staging')) {
+  nodeEnv = 'uat';
+} else if (process.argv.includes('--dev') || process.argv.includes('--development')) {
+  nodeEnv = 'development';
+} else if (process.argv.includes('--test')) {
+  nodeEnv = 'test';
+}
+
+process.env.NODE_ENV = nodeEnv;
+
+// 2. Cargar archivo específico de ambiente si existe (.env.uat, .env.production, .env.test)
 const envFile = `.env.${nodeEnv}`;
 const envPath = path.resolve(process.cwd(), envFile);
 if (fs.existsSync(envPath)) {
   dotenv.config({ path: envPath });
 }
 
-// 2. Cargar .env base como fallback
+// 3. Cargar .env base como fallback
 dotenv.config();
+
+// 4. Mapeo automático de base de datos de Firestore según el ambiente
+function resolverDatabaseId() {
+  if (process.env.FIREBASE_DATABASE_ID) {
+    return process.env.FIREBASE_DATABASE_ID;
+  }
+  switch (nodeEnv) {
+    case 'uat':
+    case 'staging':
+      return 'turnapp-uat';
+    case 'production':
+    case 'prod':
+      return 'turnapp-prod';
+    case 'development':
+    case 'test':
+    default:
+      return '(default)';
+  }
+}
 
 export function validarVariablesEntorno() {
   const requeridas = ['PORT', 'JWT_SECRET'];
@@ -24,7 +56,8 @@ export function validarVariablesEntorno() {
     const tieneCredencial =
       process.env.FIREBASE_SERVICE_ACCOUNT_KEY ||
       process.env.FIREBASE_SERVICE_ACCOUNT_PATH ||
-      process.env.GOOGLE_APPLICATION_CREDENTIALS;
+      process.env.GOOGLE_APPLICATION_CREDENTIALS ||
+      fs.existsSync(path.resolve(process.cwd(), 'serviceAccountKey.json'));
 
     if (!tieneCredencial) {
       console.error(
@@ -48,6 +81,7 @@ export const config = {
   pythonApiUrl: process.env.PYTHON_API_URL || 'http://localhost:8000',
   firebase: {
     projectId: process.env.FIREBASE_PROJECT_ID || (nodeEnv === 'test' ? 'demo-tp-prog4' : undefined),
+    databaseId: resolverDatabaseId(),
     serviceAccountPath: process.env.FIREBASE_SERVICE_ACCOUNT_PATH,
     serviceAccountKey: process.env.FIREBASE_SERVICE_ACCOUNT_KEY,
     emulatorHost: process.env.FIRESTORE_EMULATOR_HOST,
