@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "turnapp-node"
+  },
+  "targets": {
+    "turnapp-node": {
+      "hosting": {
+        "prod": [
+          "turnapp-node"
+        ],
+        "uat": [
+          "turnapp-node-uat"
+        ]
+      }
+    }
   }
 }
