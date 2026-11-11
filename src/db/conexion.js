@@ -6,6 +6,7 @@ import {
 } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import fs from "node:fs";
+import path from "node:path";
 import { config } from "../config/env.js";
 
 let app;
@@ -18,15 +19,20 @@ if (getApps().length === 0) {
     appOptions.projectId = config.firebase.projectId;
   }
 
-  // no usar credenciales reales en caso de ser --test
   const esEmulador = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
+
+  // detectar el archivo de config predeterminado en la raiz del proyecto
+  const defaultKeyPath = path.resolve(process.cwd(), "serviceAccountKey.json");
+  const serviceAccountPath =
+    config.firebase.serviceAccountPath ||
+    (fs.existsSync(defaultKeyPath) ? defaultKeyPath : null);
 
   if (esEmulador) {
     if (!appOptions.projectId) {
       appOptions.projectId = "demo-tp-prog4";
     }
   } else if (config.firebase.serviceAccountKey) {
-    // credenciales pasadas como string base64 para integrar con railway o firebase
+    // credenciales pasadas como string JSON o base64
     try {
       const raw = config.firebase.serviceAccountKey.trim();
       const jsonStr = raw.startsWith("{")
@@ -43,16 +49,10 @@ if (getApps().length === 0) {
         err.message,
       );
     }
-  } else if (
-    config.firebase.serviceAccountPath &&
-    fs.existsSync(config.firebase.serviceAccountPath)
-  ) {
-    // credenciales pasada por path al json local
+  } else if (serviceAccountPath && fs.existsSync(serviceAccountPath)) {
+    // credenciales leidas desde el JSON local
     try {
-      const fileContent = fs.readFileSync(
-        config.firebase.serviceAccountPath,
-        "utf-8",
-      );
+      const fileContent = fs.readFileSync(serviceAccountPath, "utf-8");
       const serviceAccount = JSON.parse(fileContent);
       appOptions.credential = cert(serviceAccount);
       if (!appOptions.projectId && serviceAccount.project_id) {
@@ -60,14 +60,14 @@ if (getApps().length === 0) {
       }
     } catch (err) {
       console.error(
-        "Error leyendo FIREBASE_SERVICE_ACCOUNT_PATH:",
+        "Error leyendo archivo de credenciales de Firebase:",
         err.message,
       );
     }
   } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
     appOptions.credential = applicationDefault();
   } else if (config.env === "test" || config.env === "development") {
-    // fallback para pruebas locales antes de configurar credenciales
+    // Fallback para pruebas unitarias sin conexion
     if (!appOptions.projectId) {
       appOptions.projectId = "demo-tp-prog4";
     }
