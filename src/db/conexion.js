@@ -1,13 +1,82 @@
-import { Pool } from 'pg';
+import {
+  initializeApp,
+  cert,
+  applicationDefault,
+  getApps,
+} from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
+import fs from "node:fs";
+import path from "node:path";
+import { config } from "../config/env.js";
 
-export const pool = new Pool({
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'postgres',
-  database: process.env.DB_NAME || 'tp_prog4',
-});
+let app;
 
-pool.on('connect', () => {
-  console.log('Conectado a PostgreSQL');
-});
+if (getApps().length === 0) {
+  const appOptions = {};
+
+  // coonfigurar el Project ID si esta definido
+  if (config.firebase.projectId) {
+    appOptions.projectId = config.firebase.projectId;
+  }
+
+  const esEmulador = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
+
+  // detectar el archivo de config predeterminado en la raiz del proyecto
+  const defaultKeyPath = path.resolve(process.cwd(), "serviceAccountKey.json");
+  const serviceAccountPath =
+    config.firebase.serviceAccountPath ||
+    (fs.existsSync(defaultKeyPath) ? defaultKeyPath : null);
+
+  if (esEmulador) {
+    if (!appOptions.projectId) {
+      appOptions.projectId = "demo-tp-prog4";
+    }
+  } else if (config.firebase.serviceAccountKey) {
+    // credenciales pasadas como string JSON o base64
+    try {
+      const raw = config.firebase.serviceAccountKey.trim();
+      const jsonStr = raw.startsWith("{")
+        ? raw
+        : Buffer.from(raw, "base64").toString("utf-8");
+      const serviceAccount = JSON.parse(jsonStr);
+      appOptions.credential = cert(serviceAccount);
+      if (!appOptions.projectId && serviceAccount.project_id) {
+        appOptions.projectId = serviceAccount.project_id;
+      }
+    } catch (err) {
+      console.error(
+        "Error parseando FIREBASE_SERVICE_ACCOUNT_KEY:",
+        err.message,
+      );
+    }
+  } else if (serviceAccountPath && fs.existsSync(serviceAccountPath)) {
+    // credenciales leidas desde el JSON local
+    try {
+      const fileContent = fs.readFileSync(serviceAccountPath, "utf-8");
+      const serviceAccount = JSON.parse(fileContent);
+      appOptions.credential = cert(serviceAccount);
+      if (!appOptions.projectId && serviceAccount.project_id) {
+        appOptions.projectId = serviceAccount.project_id;
+      }
+    } catch (err) {
+      console.error(
+        "Error leyendo archivo de credenciales de Firebase:",
+        err.message,
+      );
+    }
+  } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    appOptions.credential = applicationDefault();
+  } else if (config.env === "test" || config.env === "development") {
+    // Fallback para pruebas unitarias sin conexion
+    if (!appOptions.projectId) {
+      appOptions.projectId = "demo-tp-prog4";
+    }
+  }
+
+  app = initializeApp(appOptions);
+} else {
+  app = getApps()[0];
+}
+
+export const db = getFirestore(app);
+export { app };

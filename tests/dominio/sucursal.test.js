@@ -1,4 +1,6 @@
-import { test, assert } from 'node:test';
+import { test } from 'node:test';
+import assert from 'node:assert';
+
 
 test('el servidor responde en el endpoint de salud', async () => {
   // Este test es un placeholder. Reemplazalo por tests reales de dominio.
