@@ -1,4 +1,5 @@
-import { test, assert } from 'node:test';
+import { test } from 'node:test';
+import assert from 'node:assert';
 
 // Test de concurrencia crítico del problema central:
 // 50 intentos simultáneos sobre 6 lugares → 6 confirmadas, 44 rechazos, ningún crédito descontado de más.
@@ -28,7 +29,7 @@ test('concurrencia: 50 intentos sobre 6 lugares => máximo 6 confirmadas', async
 
   assert.ok(confirmadas <= LUGARES, `Se confirmaron ${confirmadas}, máximo permitido ${LUGARES}`);
   assert.strictEqual(confirmadas + rechazos, INTENTOS, 'Todos los intentos deben tener resultado');
-  assert.ok(rechazas >= INTENTOS - LUGARES, `Debe haber al menos ${INTENTOS - LUGARES} rechazos`);
+  assert.ok(rechazos >= INTENTOS - LUGARES, `Debe haber al menos ${INTENTOS - LUGARES} rechazos`);
 });
 
 test('concurrencia: idempotencia de cancelación', async () => {
