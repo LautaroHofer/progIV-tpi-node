@@ -78,5 +78,11 @@ if (getApps().length === 0) {
   app = getApps()[0];
 }
 
-export const db = getFirestore(app);
+// Si se especificó una base de datos secundaria (ej. 'prod'), nos conectamos a ella;
+// de lo contrario, utiliza la base de datos predeterminada '(default)'.
+export const db =
+  config.firebase.databaseId && config.firebase.databaseId !== '(default)'
+    ? getFirestore(app, config.firebase.databaseId)
+    : getFirestore(app);
+
 export { app };

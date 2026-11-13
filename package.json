@@ -2,16 +2,26 @@
   "name": "tp-prog4-node",
   "version": "1.0.0",
   "description": "Backend Node.js - TP Final Programación IV",
+  "main": "index.js",
   "engines": {
-    "node": ">=22.0.0"
+    "node": "22"
   },
   "scripts": {
     "start": "node src/servidor.js",
+    "start:uat": "node src/servidor.js --uat",
+    "start:prod": "node src/servidor.js --prod",
     "dev": "node --watch src/servidor.js",
+    "dev:uat": "node --watch src/servidor.js --uat",
+    "dev:prod": "node --watch src/servidor.js --prod",
     "setup": "node src/db/setup.js",
+    "setup:uat": "node src/db/setup.js --uat",
+    "setup:prod": "node src/db/setup.js --prod",
     "test": "node --test tests/**/*.js",
     "lint": "node --check src/servidor.js",
-    "prepare": "husky"
+    "deploy": "firebase deploy",
+    "deploy:uat": "firebase deploy --only functions:apiUat,hosting:uat",
+    "deploy:prod": "firebase deploy --only functions:api,hosting:prod",
+    "prepare": "node -e \"if (process.env.NODE_ENV !== 'production') { try { (await import('husky')).default(); } catch (e) {} }\""
   },
   "type": "module",
   "dependencies": {
@@ -19,6 +29,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "firebase-admin": "^14.5.0",
+    "firebase-functions": "^7.4.0",
     "joi": "^17.12.2",
     "jsonwebtoken": "^9.0.2"
   },
