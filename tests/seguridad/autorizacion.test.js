@@ -1,4 +1,5 @@
-import { test, assert } from 'node:test';
+import { test } from 'node:test';
+import assert from 'node:assert';
 
 test('seguridad: endpoint inexistente devuelve 404', async () => {
   // Placeholder: este test debería hacer un request HTTP real al servidor

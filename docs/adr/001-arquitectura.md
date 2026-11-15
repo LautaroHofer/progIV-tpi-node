@@ -1,29 +1,38 @@
-# ADR 001 - Arquitectura del backend Node.js
+# ADR 001 - Usamos arquitectura en capas tradicional (Rutas, Controladores, Servicios y Datos)
 
 ## Estado
-Aceptado
+Aceptado (reemplaza la propuesta preliminar de arquitectura hexagonal)
+
+## Fecha y participantes
+8 de noviembre de 2026.
+Participaron: Lautaro Hofer, Erick Vicentin, Santiago Nickisch.
 
 ## Contexto
-El TP Final de Programación IV requiere un backend en Node.js que gestione reservas de turnos para salones de bienestar y pilates. El sistema debe soportar concurrencia (50 intentos simultáneos sobre 6 lugares), seguridad (autorización por recurso), y arquitectura limpia (dominio separado de infraestructura).
+El sistema de gestión de salones de bienestar y pilates fue dividido en dos microservicios independientes: una API en Node.js con Express encargada de Usuarios y Salones, y otra en Python con Django para Horarios y Turnos.
+Inicialmente se había contemplado una arquitectura hexagonal con puertos y adaptadores. Sin embargo, en un sistema distribuido en dos servicios con alcances bien delimitados y equipos reducidos, la sobrecarga de mantener puertos abstractos, adaptadores duplicados en memoria y módulos de composición manual agrega una complejidad accidental significativa que no aporta valor al negocio.
+
+## Opciones consideradas
+1. **Arquitectura Hexagonal (Puertos y Adaptadores)**:
+   - *Ventajas:* Aislamiento total del dominio respecto a librerías e infraestructura; permite sustituir adaptadores fácilmente.
+   - *Desventajas:* Requiere una gran cantidad de código repetitivo (interfaces simuladas en JS, adaptadores de memoria para cada entidad, inyección manual en `composicion.js`), dificultando la velocidad de desarrollo y agregando fricción innecesaria.
+2. **Arquitectura en Capas Tradicional (Routes -> Controllers -> Services -> DB)**:
+   - *Ventajas:* Organización estándar de la industria, flujo de dependencias unidireccional y predecible, separación clara de responsabilidades (HTTP en controladores, reglas de negocio en servicios, acceso a datos centralizado), permitiendo testear los servicios de negocio de forma unitaria sin levantar Express.
+   - *Desventajas:* Si en el futuro se necesitara cambiar de motor de base de datos de manera dinámica, se requiere modificar los servicios o módulos de acceso a datos directamente.
 
 ## Decisión
-Usar una arquitectura en capas con separación estricta entre dominio e infraestructura:
-
-- `src/dominio/`: reglas de negocio, entidades y casos de uso. No importa Express ni el driver de la base de datos.
-- `src/dominio/puertos/`: interfaces que el dominio necesita (repositorios, notificador, pagos).
-- `src/infra/http/`: Express, rutas, middlewares, validación de entrada, traducción de errores a HTTP.
-- `src/infra/db/`: adaptadores de persistencia, migraciones, consultas.
-- `src/infra/externos/`: adaptadores de servicios externos (IA, mapas, correo, pagos).
-- `src/infra/memoria/`: adaptadores falsos o en memoria para tests.
-- `src/config/`: lectura y validación de variables de entorno.
-- `src/composicion.js`: único lugar que crea adaptadores concretos y los inyecta.
-- `src/servidor.js`: arranque, endpoints de salud, apagado ordenado por SIGTERM.
-
-## Alternativas descartadas
-- **Mezclar lógica de negocio en rutas de Express**: dificulta los tests y acopla el dominio al framework.
-- **Usar un ORM sin justificación**: se optó por `pg` nativo para tener control total de las consultas SQL y poder explicarlas en la defensa. Se puede reconsiderar con un ADR nuevo.
-- **TypeScript**: es opcional y no suma nota por sí mismo; no reemplaza la validación de entrada en tiempo de ejecución.
+Se decide adoptar una **Arquitectura en Capas Tradicional** organizada en:
+- `src/routes/`: definición de rutas y verbos HTTP de Express.
+- `src/controllers/`: manejo de peticiones (`req`), validaciones de formato y respuestas (`res`).
+- `src/services/`: reglas y lógica de negocio pura (créditos, planes, notificaciones).
+- `src/models/`: definiciones de entidades y esquemas de datos.
+- `src/middlewares/`: autenticación, manejo centralizado de errores y control de acceso.
+- `src/config/`: carga y validación estricta de variables de entorno.
+- `src/db/`: conexión y utilidades de base de datos.
 
 ## Consecuencias
-Positivas: el dominio es fácilmente testeable sin HTTP ni base de datos; la arquitectura cumple con el anexo 11.1 del enunciado.
-Negativas: más archivos y boilerplate inicial.
+- **Qué gana el sistema:** Simplicidad, legibilidad, menor cantidad de archivos boilerplate, mayor agilidad para implementar features y facilidad para que cualquier integrante del grupo comprenda y modifique el código.
+- **Qué pierde:** La capacidad de intercambiar el adaptador de almacenamiento cambiando únicamente un archivo de composición.
+- **Qué queda más difícil:** Si se quisiera cambiar de base de datos en caliente, se deberán adaptar las llamadas en la capa de servicios o repositorio.
+
+## Qué nos haría cambiar de decisión
+Un cambio en los requisitos del proyecto que obligue a soportar múltiples motores de persistencia intercambiables simultáneamente o la necesidad de una lógica de dominio extremadamente compleja que justifique Domain-Driven Design (DDD) puro.

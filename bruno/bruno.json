@@ -1,0 +1,9 @@
+{
+  "version": "1.0.1",
+  "name": "TIP PROG IV - NODE",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

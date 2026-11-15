@@ -1,0 +1,22 @@
+meta {
+  name: Actualizar Alumno
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/alumnos/:id
+  body: json
+  auth: none
+}
+
+params:path {
+  id: {{alumnoId}}
+}
+
+body:json {
+  {
+    "nombre": "Ana Sofía García",
+    "email": "ana.garcia@ejemplo.com"
+  }
+}
