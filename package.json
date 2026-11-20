@@ -18,6 +18,7 @@
     "setup:prod": "node src/db/setup.js --prod",
     "test": "node --test tests/**/*.js",
     "lint": "node --check src/servidor.js",
+    "env:check": "node src/scripts/check-env.js",
     "deploy": "firebase deploy",
     "deploy:uat": "firebase deploy --only functions:apiUat,hosting:uat",
     "deploy:prod": "firebase deploy --only functions:api,hosting:prod",
