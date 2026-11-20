@@ -20,6 +20,8 @@ Ninguno recibido todavía.
 - [ ] Límite de tasa (rate limiting).
 - [ ] Test de concurrencia (50 intentos sobre 6 lugares).
 - [ ] Test de idempotencia de cancelación.
+- [ ] Validación de JWT (algoritmo HS256 forzado, expiración exp).
+- [ ] Middleware de autenticación implementado en `src/middlewares/auth.js`.
 
 ## Notas
 No hay secretos en el repositorio ni en el historial. Existe `.env.example` con todas las variables.
