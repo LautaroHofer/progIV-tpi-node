@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
  * Retorna el token string o null si no está presente o tiene formato inválido.
  */
 export function extraerTokenBearer(req) {
-  const authHeader = req.headers.authorization || '';
+  const authHeader = (req.headers.authorization || '').trim();
   const partes = authHeader.split(/\s+/);
 
   if (partes.length !== 2 || partes[0].toLowerCase() !== 'bearer') {
