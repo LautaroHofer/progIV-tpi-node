@@ -21,7 +21,11 @@ Generar la grilla de 3 meses para todas las sucursales (≥ 5.000 ocurrencias) n
 | Con tarea pesada final (req/s) | - | - | - | - |
 | Lag del event loop (ms) | - | - | - | - |
 
-> Los valores se completarán al ejecutar las mediciones con `autocannon` o `k6`.
+## Herramientas utilizadas
+- [ ] `autocannon`
+- [ ] `k6`
+- [ ] `node:test` con `monitorEventLoopDelay`
+- [ ] Otra: _______________
 
 ## Conclusión
 La versión final de la generación de grilla no degrada las reservas concurrentes y puede reejecutarse sin duplicar clases ni borrar reservas existentes.
