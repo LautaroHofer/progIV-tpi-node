@@ -6,13 +6,13 @@ import jwt from 'jsonwebtoken';
  */
 export function extraerTokenBearer(req) {
   const authHeader = req.headers.authorization || '';
-  const partes = authHeader.split(' ', 1);
+  const partes = authHeader.split(/\s+/);
 
   if (partes.length !== 2 || partes[0].toLowerCase() !== 'bearer') {
     return null;
   }
 
-  const token = partes[1].trim();
+  const token = partes[1];
   return token || null;
 }
 

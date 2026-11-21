@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert';
-import Alumno from '../../src/models/Alumno.js';
+import { Alumno } from '../../src/models/Alumno.js';
 import { schemas } from '../../src/validators/schemas.js';
 
 test('dominio: Alumno inicializa con creditos en 0 por defecto', () => {
@@ -71,8 +71,9 @@ test('dominio: esquema Joi rechaza nombre mayor a 100 caracteres', () => {
 });
 
 test('dominio: esquema Joi requiere nombre y email', () => {
-  const { error } = schemas.alumno.validate({});
+  const { error } = schemas.alumno.validate({}, { abortEarly: false });
   assert.ok(error);
-  assert.ok(error.details.some((d) => d.path.includes('nombre')));
-  assert.ok(error.details.some((d) => d.path.includes('email')));
+  const paths = error.details.map((d) => d.path.join('.'));
+  assert.ok(paths.some((p) => p === 'nombre'));
+  assert.ok(paths.some((p) => p === 'email'));
 });
