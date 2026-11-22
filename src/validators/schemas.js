@@ -16,4 +16,11 @@ export const schemas = {
     direccion: Joi.string().min(1).max(200).required(),
     zonaHoraria: Joi.string().min(1).max(60).required(),
   }),
+
+  sala: Joi.object({
+    sucursalId: Joi.string().trim().min(1).required(),
+    nombre: Joi.string().trim().min(1).max(100).required(),
+    capacidad: Joi.number().integer().min(1).required(),
+    equipamiento: Joi.string().trim().max(150).allow('').optional(),
+  }),
 };
