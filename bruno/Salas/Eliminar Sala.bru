@@ -1,0 +1,19 @@
+meta {
+  name: Eliminar Sala
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/salas/:id
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+params:path {
+  id: {{salaId}}
+}

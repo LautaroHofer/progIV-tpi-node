@@ -1,0 +1,28 @@
+meta {
+  name: Actualizar Sala
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/salas/:id
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+params:path {
+  id: {{salaId}}
+}
+
+body:json {
+  {
+    "sucursalId": "{{sucursalId}}",
+    "nombre": "Sala Reformer Principal",
+    "capacidad": 8,
+    "equipamiento": "8 Reformers"
+  }
+}
