@@ -1,16 +1,9 @@
-version: "3.8"
-
 services:
-  db:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: tp_prog4
+  firestore:
+    image: gcr.io/google.com/cloudsdktool/google-cloud-cli:emulators
+    command: gcloud beta emulators firestore start --host-port=0.0.0.0:8080
     ports:
-      - "5432:5432"
-    volumes:
-      - pgdata_node:/var/lib/postgresql/data
+      - "8080:8080"
 
   api:
     build: .
@@ -19,14 +12,9 @@ services:
     environment:
       - NODE_ENV=development
       - PORT=3000
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=tp_prog4
+      - JWT_SECRET=dev_secret_local
+      - FIREBASE_PROJECT_ID=demo-tp-prog4
+      - FIRESTORE_EMULATOR_HOST=firestore:8080
       - PYTHON_API_URL=http://python:8000
     depends_on:
-      - db
-
-volumes:
-  pgdata_node:
+      - firestore
