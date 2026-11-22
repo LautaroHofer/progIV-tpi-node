@@ -16,4 +16,9 @@ export const schemas = {
     precio: Joi.number().positive().required(),
     vigenciaMeses: Joi.number().integer().positive().required(),
   }),
+  sucursal: Joi.object({
+    nombre: Joi.string().min(1).max(100).required(),
+    direccion: Joi.string().min(1).max(200).required(),
+    zonaHoraria: Joi.string().min(1).max(60).required(),
+  }),
 };
