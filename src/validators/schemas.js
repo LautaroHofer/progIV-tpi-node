@@ -10,4 +10,10 @@ export const schemas = {
     nombre: Joi.string().min(1).max(100).required(),
     email: Joi.string().email().required(),
   }),
+
+  sucursal: Joi.object({
+    nombre: Joi.string().min(1).max(100).required(),
+    direccion: Joi.string().min(1).max(200).required(),
+    zonaHoraria: Joi.string().min(1).max(60).required(),
+  }),
 };
