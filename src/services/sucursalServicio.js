@@ -1,4 +1,5 @@
 import { db } from '../db/conexion.js';
+import { ErrorConflicto, ErrorNoEncontrado } from '../middlewares/errores.js';
 
 const COLECCION_SUCURSALES = 'sucursales';
 
@@ -12,9 +13,7 @@ export async function crearSucursal({ nombre, direccion, zonaHoraria }) {
     .get();
 
   if (!existente.empty) {
-    const error = new Error('Ya existe una sucursal registrada con ese nombre');
-    error.statusCode = 409;
-    throw error;
+    throw new ErrorConflicto('Ya existe una sucursal registrada con ese nombre');
   }
 
   const nuevaSucursal = {
@@ -38,9 +37,7 @@ export async function listarSucursales() {
 export async function obtenerSucursalPorId(id) {
   const doc = await db.collection(COLECCION_SUCURSALES).doc(id).get();
   if (!doc.exists) {
-    const error = new Error('Sucursal no encontrada');
-    error.statusCode = 404;
-    throw error;
+    throw new ErrorNoEncontrado('Sucursal no encontrada');
   }
   return { id: doc.id, ...doc.data() };
 }
@@ -50,9 +47,7 @@ export async function actualizarSucursal(id, { nombre, direccion, zonaHoraria })
   const docRef = db.collection(COLECCION_SUCURSALES).doc(id);
   const doc = await docRef.get();
   if (!doc.exists) {
-    const error = new Error('Sucursal no encontrada');
-    error.statusCode = 404;
-    throw error;
+    throw new ErrorNoEncontrado('Sucursal no encontrada');
   }
 
   const nombreLimpio = nombre.trim();
@@ -63,9 +58,7 @@ export async function actualizarSucursal(id, { nombre, direccion, zonaHoraria })
       .limit(1)
       .get();
     if (!ocupado.empty && ocupado.docs[0].id !== id) {
-      const error = new Error('Ya existe otra sucursal con ese nombre');
-      error.statusCode = 409;
-      throw error;
+      throw new ErrorConflicto('Ya existe otra sucursal con ese nombre');
     }
   }
 
@@ -85,9 +78,7 @@ export async function eliminarSucursal(id) {
   const docRef = db.collection(COLECCION_SUCURSALES).doc(id);
   const doc = await docRef.get();
   if (!doc.exists) {
-    const error = new Error('Sucursal no encontrada');
-    error.statusCode = 404;
-    throw error;
+    throw new ErrorNoEncontrado('Sucursal no encontrada');
   }
   await docRef.delete();
   return { mensaje: 'Sucursal eliminada correctamente' };
