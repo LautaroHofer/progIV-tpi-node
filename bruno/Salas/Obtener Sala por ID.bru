@@ -1,0 +1,15 @@
+meta {
+  name: Obtener Sala por ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/salas/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: {{salaId}}
+}
