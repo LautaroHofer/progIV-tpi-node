@@ -1,6 +1,8 @@
 import express from 'express';
 import rutasAlumnos from './routes/rutasAlumnos.js';
+import rutasPlanes from './routes/rutasPlanes.js';
 import rutasSucursales from './routes/rutasSucursales.js';
+import rutasSalas from './routes/rutasSalas.js';
 import { manejadorErrores } from './middlewares/error.js';
 
 export function crearApp() {
@@ -16,7 +18,9 @@ export function crearApp() {
   });
 
   app.use('/api/alumnos', rutasAlumnos);
+  app.use('/api/planes', rutasPlanes);
   app.use('/api/sucursales', rutasSucursales);
+  app.use('/api/salas', rutasSalas);
 
   app.use((req, res) => {
     res.status(404).json({ error: 'Endpoint no encontrado' });
