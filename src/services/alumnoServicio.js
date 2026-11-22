@@ -1,4 +1,5 @@
 import { db } from "../db/conexion.js";
+import { ErrorConflicto, ErrorNoEncontrado } from "../middlewares/errores.js";
 
 const COLECCION_ALUMNOS = "alumnos";
 
@@ -14,9 +15,7 @@ export async function crearAlumno({ nombre, email }) {
     .get();
 
   if (!existente.empty) {
-    const error = new Error("Ya existe un alumno registrado con ese email");
-    error.statusCode = 409;
-    throw error;
+    throw new ErrorConflicto("Ya existe un alumno registrado con ese email");
   }
 
   const nuevoAlumno = {
@@ -43,9 +42,7 @@ export async function listarAlumnos() {
 export async function obtenerAlumnoPorId(id) {
   const doc = await db.collection(COLECCION_ALUMNOS).doc(id).get();
   if (!doc.exists) {
-    const error = new Error("Alumno no encontrado");
-    error.statusCode = 404;
-    throw error;
+    throw new ErrorNoEncontrado("Alumno no encontrado");
   }
   return { id: doc.id, ...doc.data() };
 }
@@ -56,9 +53,7 @@ export async function actualizarAlumno(id, { nombre, email }) {
   const doc = await docRef.get();
 
   if (!doc.exists) {
-    const error = new Error("Alumno no encontrado");
-    error.statusCode = 404;
-    throw error;
+    throw new ErrorNoEncontrado("Alumno no encontrado");
   }
 
   const emailNormalizado = email.toLowerCase().trim();
@@ -72,9 +67,7 @@ export async function actualizarAlumno(id, { nombre, email }) {
       .get();
 
     if (!ocupado.empty && ocupado.docs[0].id !== id) {
-      const error = new Error("El nuevo email ya está en uso por otro alumno");
-      error.statusCode = 409;
-      throw error;
+      throw new ErrorConflicto("El nuevo email ya está en uso por otro alumno");
     }
   }
 
@@ -94,9 +87,7 @@ export async function eliminarAlumno(id) {
   const doc = await docRef.get();
 
   if (!doc.exists) {
-    const error = new Error("Alumno no encontrado");
-    error.statusCode = 404;
-    throw error;
+    throw new ErrorNoEncontrado("Alumno no encontrado");
   }
 
   await docRef.delete();
