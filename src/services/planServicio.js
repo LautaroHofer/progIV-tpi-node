@@ -50,3 +50,58 @@ export async function obtenerPlanPorId(id) {
   }
   return { id: doc.id, ...doc.data() };
 }
+
+// Actualizar un plan existente
+export async function actualizarPlan(id, { nombre, cantidadClases, precio, vigenciaMeses }) {
+  const docRef = db.collection(COLECCION_PLANES).doc(id);
+  const doc = await docRef.get();
+
+  if (!doc.exists) {
+    const error = new Error("Plan no encontrado");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const nombreLimpio = nombre.trim();
+
+  // si cambia el nombre, verificar que no esté ocupado por otro plan
+  if (doc.data().nombre !== nombreLimpio) {
+    const ocupado = await db
+      .collection(COLECCION_PLANES)
+      .where("nombre", "==", nombreLimpio)
+      .limit(1)
+      .get();
+
+    if (!ocupado.empty && ocupado.docs[0].id !== id) {
+      const error = new Error("El nombre ya está en uso por otro plan");
+      error.statusCode = 409;
+      throw error;
+    }
+  }
+
+  const datosActualizados = {
+    nombre: nombreLimpio,
+    cantidadClases: Number(cantidadClases),
+    precio: Number(precio),
+    vigenciaMeses: Number(vigenciaMeses),
+    actualizadoEn: new Date().toISOString(),
+  };
+
+  await docRef.update(datosActualizados);
+  return { id, ...doc.data(), ...datosActualizados };
+}
+
+// Eliminar un plan por ID
+export async function eliminarPlan(id) {
+  const docRef = db.collection(COLECCION_PLANES).doc(id);
+  const doc = await docRef.get();
+
+  if (!doc.exists) {
+    const error = new Error("Plan no encontrado");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  await docRef.delete();
+  return { mensaje: "Plan eliminado correctamente" };
+}
