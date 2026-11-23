@@ -50,4 +50,21 @@ export const schemas = {
     nombre: Joi.string().min(1).max(100).required(),
     email: Joi.string().trim().email().max(200).required(),
   }),
+
+  creditoAgregar: Joi.object({
+    cantidad: Joi.number().integer().positive().required(),
+    motivo: Joi.string().trim().max(200).allow('').optional(),
+    fechaVencimiento: Joi.string().isoDate().optional(),
+  }),
+
+  creditoDescontar: Joi.object({
+    cantidad: Joi.number().integer().positive().required(),
+    motivo: Joi.string().trim().max(200).allow('').optional(),
+  }),
+
+  creditoDevolver: Joi.object({
+    cantidad: Joi.number().integer().positive().required(),
+    motivo: Joi.string().trim().max(200).allow('').optional(),
+    fechaVencimiento: Joi.string().isoDate().optional(),
+  }),
 };
