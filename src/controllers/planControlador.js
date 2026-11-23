@@ -27,3 +27,27 @@ export async function obtenerPlan(req, res, next) {
     next(error);
   }
 }
+
+export async function actualizarPlan(req, res, next) {
+  try {
+    const { nombre, cantidadClases, precio, vigenciaMeses } = req.body;
+    const plan = await planServicio.actualizarPlan(req.params.id, {
+      nombre,
+      cantidadClases,
+      precio,
+      vigenciaMeses,
+    });
+    res.json(plan);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function eliminarPlan(req, res, next) {
+  try {
+    const resultado = await planServicio.eliminarPlan(req.params.id);
+    res.json(resultado);
+  } catch (error) {
+    next(error);
+  }
+}
