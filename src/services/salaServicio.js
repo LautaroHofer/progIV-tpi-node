@@ -1,4 +1,5 @@
 import { db } from '../db/conexion.js';
+import { ErrorConflicto, ErrorNoEncontrado } from '../middlewares/errores.js';
 
 const COLECCION_SALAS = 'salas';
 const COLECCION_SUCURSALES = 'sucursales';
@@ -7,9 +8,7 @@ const COLECCION_SUCURSALES = 'sucursales';
 async function verificarSucursalExiste(sucursalId) {
   const sucursalDoc = await db.collection(COLECCION_SUCURSALES).doc(sucursalId).get();
   if (!sucursalDoc.exists) {
-    const error = new Error('Sucursal no encontrada');
-    error.statusCode = 404;
-    throw error;
+    throw new ErrorNoEncontrado('Sucursal no encontrada');
   }
 }
 
@@ -28,9 +27,7 @@ export async function crearSala({ sucursalId, nombre, capacidad, equipamiento = 
     .get();
 
   if (!existente.empty) {
-    const error = new Error('Ya existe una sala con ese nombre en esta sucursal');
-    error.statusCode = 409;
-    throw error;
+    throw new ErrorConflicto('Ya existe una sala con ese nombre en esta sucursal');
   }
 
   const nuevaSala = {
@@ -60,9 +57,7 @@ export async function listarSalas(sucursalId) {
 export async function obtenerSalaPorId(id) {
   const doc = await db.collection(COLECCION_SALAS).doc(id).get();
   if (!doc.exists) {
-    const error = new Error('Sala no encontrada');
-    error.statusCode = 404;
-    throw error;
+    throw new ErrorNoEncontrado('Sala no encontrada');
   }
   return { id: doc.id, ...doc.data() };
 }
@@ -73,9 +68,7 @@ export async function actualizarSala(id, { sucursalId, nombre, capacidad, equipa
   const doc = await docRef.get();
 
   if (!doc.exists) {
-    const error = new Error('Sala no encontrada');
-    error.statusCode = 404;
-    throw error;
+    throw new ErrorNoEncontrado('Sala no encontrada');
   }
 
   const sucursalIdLimpio = sucursalId.trim();
@@ -95,9 +88,7 @@ export async function actualizarSala(id, { sucursalId, nombre, capacidad, equipa
       .get();
 
     if (!ocupado.empty && ocupado.docs[0].id !== id) {
-      const error = new Error('Ya existe otra sala con ese nombre en esta sucursal');
-      error.statusCode = 409;
-      throw error;
+      throw new ErrorConflicto('Ya existe otra sala con ese nombre en esta sucursal');
     }
   }
 
@@ -119,9 +110,7 @@ export async function eliminarSala(id) {
   const doc = await docRef.get();
 
   if (!doc.exists) {
-    const error = new Error('Sala no encontrada');
-    error.statusCode = 404;
-    throw error;
+    throw new ErrorNoEncontrado('Sala no encontrada');
   }
 
   await docRef.delete();
