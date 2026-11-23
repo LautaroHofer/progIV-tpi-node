@@ -5,6 +5,8 @@ import {
   crearPlan,
   listarPlanes,
   obtenerPlan,
+  actualizarPlan,
+  eliminarPlan,
 } from '../controllers/planControlador.js';
 
 const router = express.Router();
@@ -12,5 +14,7 @@ const router = express.Router();
 router.post('/', requiereAuth, requiereRol(['admin']), validarEsquema('plan'), crearPlan);
 router.get('/', listarPlanes);
 router.get('/:id', obtenerPlan);
+router.put('/:id', requiereAuth, requiereRol(['admin']), validarEsquema('plan'), actualizarPlan);
+router.delete('/:id', requiereAuth, requiereRol(['admin']), eliminarPlan);
 
 export default router;
