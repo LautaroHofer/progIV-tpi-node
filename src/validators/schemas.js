@@ -21,7 +21,7 @@ export const schemas = {
     cantidadClases: Joi.number().integer().positive().optional(),
     precio: Joi.number().positive().optional(),
     vigenciaMeses: Joi.number().integer().positive().optional(),
-  }),
+  }).min(1),
   sucursal: Joi.object({
     nombre: Joi.string().min(1).max(100).required(),
     direccion: Joi.string().min(1).max(200).required(),

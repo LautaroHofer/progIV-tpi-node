@@ -54,7 +54,7 @@ export async function obtenerPlanPorId(id, dbInyectado = db) {
   return { id: doc.id, ...doc.data() };
 }
 
-// Actualizar un plan existente
+// Actualizar un plan existente (actualización parcial permitida)
 export async function actualizarPlan(id, { nombre, cantidadClases, precio, vigenciaMeses }, dbInyectado = db) {
   const docRef = dbInyectado.collection(COLECCION_PLANES).doc(id);
   const doc = await docRef.get();
@@ -65,33 +65,59 @@ export async function actualizarPlan(id, { nombre, cantidadClases, precio, vigen
     throw error;
   }
 
-  const nombreLimpio = nombre.trim();
+  const datosActuales = doc.data();
+  const datosActualizados = {};
+  let hayCambios = false;
 
-  // si cambia el nombre, verificar que no esté ocupado por otro plan
-  if (doc.data().nombre !== nombreLimpio) {
-    const ocupado = await dbInyectado
-      .collection(COLECCION_PLANES)
-      .where("nombre", "==", nombreLimpio)
-      .limit(1)
-      .get();
+  // Solo actualizar los campos que realmente vinieron en el request
+  if (nombre !== undefined) {
+    const nombreLimpio = nombre.trim();
 
-    if (!ocupado.empty && ocupado.docs[0].id !== id) {
-      const error = new Error("El nombre ya está en uso por otro plan");
-      error.statusCode = 409;
-      throw error;
+    // si cambia el nombre, verificar que no esté ocupado por otro plan
+    if (datosActuales.nombre !== nombreLimpio) {
+      const ocupado = await dbInyectado
+        .collection(COLECCION_PLANES)
+        .where("nombre", "==", nombreLimpio)
+        .limit(1)
+        .get();
+
+      if (!ocupado.empty && ocupado.docs[0].id !== id) {
+        const error = new Error("El nombre ya está en uso por otro plan");
+        error.statusCode = 409;
+        throw error;
+      }
     }
+
+    datosActualizados.nombre = nombreLimpio;
+    hayCambios = true;
   }
 
-  const datosActualizados = {
-    nombre: nombreLimpio,
-    cantidadClases: Number(cantidadClases),
-    precio: Number(precio),
-    vigenciaMeses: Number(vigenciaMeses),
-    actualizadoEn: new Date().toISOString(),
-  };
+  if (cantidadClases !== undefined) {
+    datosActualizados.cantidadClases = Number(cantidadClases);
+    hayCambios = true;
+  }
+
+  if (precio !== undefined) {
+    datosActualizados.precio = Number(precio);
+    hayCambios = true;
+  }
+
+  if (vigenciaMeses !== undefined) {
+    datosActualizados.vigenciaMeses = Number(vigenciaMeses);
+    hayCambios = true;
+  }
+
+  // Rechazar PUT vacío: al menos un campo debe venir para actualizar
+  if (!hayCambios) {
+    const error = new Error("Debe proporcionar al menos un campo para actualizar");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  datosActualizados.actualizadoEn = new Date().toISOString();
 
   await docRef.update(datosActualizados);
-  return { id, ...doc.data(), ...datosActualizados };
+  return { id, ...datosActuales, ...datosActualizados };
 }
 
 // Verificar que el plan no tenga referencias activas antes de eliminarlo
