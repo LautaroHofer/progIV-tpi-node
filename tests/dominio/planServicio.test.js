@@ -171,3 +171,44 @@ test('servicio: rechazar eliminar plan inexistente (404)', async () => {
   const db = crearDbMock([]);
   await assert.rejects(() => eliminarPlan('inexistente', db), (err) => err.statusCode === 404);
 });
+
+test('servicio: rechazar PUT vacío sin campos (400)', async () => {
+  const db = crearDbMock([
+    { id: 'p1', nombre: 'Plan A', cantidadClases: 5, precio: 3000, vigenciaMeses: 2 },
+  ]);
+  await assert.rejects(() => actualizarPlan('p1', {}, db), (err) => err.statusCode === 400);
+});
+
+test('servicio: actualizar solo precio preserva los demás campos', async () => {
+  const db = crearDbMock([
+    {
+      id: 'p1',
+      nombre: 'Plan Original',
+      cantidadClases: 5,
+      precio: 3000,
+      vigenciaMeses: 2,
+    },
+  ]);
+  const actualizado = await actualizarPlan('p1', { precio: 4500 }, db);
+  assert.strictEqual(actualizado.precio, 4500);
+  assert.strictEqual(actualizado.nombre, 'Plan Original');      // se preserva
+  assert.strictEqual(actualizado.cantidadClases, 5);            // se preserva
+  assert.strictEqual(actualizado.vigenciaMeses, 2);             // se preserva
+});
+
+test('servicio: actualizar solo nombre preserva los demás campos', async () => {
+  const db = crearDbMock([
+    {
+      id: 'p1',
+      nombre: 'Plan Original',
+      cantidadClases: 5,
+      precio: 3000,
+      vigenciaMeses: 2,
+    },
+  ]);
+  const actualizado = await actualizarPlan('p1', { nombre: 'Plan Renombrado' }, db);
+  assert.strictEqual(actualizado.nombre, 'Plan Renombrado');
+  assert.strictEqual(actualizado.precio, 3000);                 // se preserva
+  assert.strictEqual(actualizado.cantidadClases, 5);            // se preserva
+  assert.strictEqual(actualizado.vigenciaMeses, 2);             // se preserva
+});
