@@ -39,6 +39,7 @@ test('manejadorErrores: traduce ErrorApp a su status HTTP y oculta errores inter
   assert.deepStrictEqual(res404.body, {
     error: 'Alumno no encontrado',
     codigo: 'NO_ENCONTRADO',
+    correlationId: null,
   });
 
   const res500 = crearResMock();
@@ -46,4 +47,5 @@ test('manejadorErrores: traduce ErrorApp a su status HTTP y oculta errores inter
   assert.strictEqual(res500.statusCode, 500);
   assert.strictEqual(res500.body.error, 'Error interno del servidor');
   assert.strictEqual(res500.body.codigo, 'ERROR_INTERNO');
+  assert.strictEqual(res500.body.correlationId, null);
 });
