@@ -46,4 +46,8 @@ export const schemas = {
     email: Joi.string().trim().email().required(),
     password: Joi.string().min(1).max(100).required(),
   }),
+  profesor: Joi.object({
+    nombre: Joi.string().min(1).max(100).required(),
+    email: Joi.string().trim().email().max(200).required(),
+  }),
 };
