@@ -1,10 +1,9 @@
-import { db } from "../db/conexion.js";
 import { ErrorConflicto, ErrorNoEncontrado } from "../middlewares/errores.js";
 
 const COLECCION_PROFESORES = "profesores";
 
 // Crear un nuevo profesor, validación de unicidad de email
-export async function crearProfesor({ nombre, email }) {
+export async function crearProfesor({ nombre, email }, db) {
   const emailNormalizado = email.toLowerCase().trim();
 
   // verificar que el email no se repita
@@ -29,7 +28,7 @@ export async function crearProfesor({ nombre, email }) {
 }
 
 // Listar profesores en bbdd
-export async function listarProfesores() {
+export async function listarProfesores(db) {
   const snapshot = await db.collection(COLECCION_PROFESORES).get();
   return snapshot.docs.map((doc) => ({
     id: doc.id,
@@ -38,7 +37,7 @@ export async function listarProfesores() {
 }
 
 // Obtener un profesor por ID
-export async function obtenerProfesorPorId(id) {
+export async function obtenerProfesorPorId(id, db) {
   const doc = await db.collection(COLECCION_PROFESORES).doc(id).get();
   if (!doc.exists) {
     throw new ErrorNoEncontrado("Profesor no encontrado");
