@@ -1,0 +1,27 @@
+meta {
+  name: Actualizar Sucursal
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/sucursales/:id
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+params:path {
+  id: {{sucursalId}}
+}
+
+body:json {
+  {
+    "nombre": "Sucursal Centro Renovada",
+    "direccion": "Av. 9 de Julio 150",
+    "zonaHoraria": "America/Argentina/Buenos_Aires"
+  }
+}

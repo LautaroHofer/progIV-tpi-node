@@ -1,0 +1,15 @@
+meta {
+  name: Obtener Sucursal por ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/sucursales/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: {{sucursalId}}
+}
