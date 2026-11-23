@@ -1,0 +1,33 @@
+meta {
+  name: Crear Plan
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/planes
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "nombre": "Plan Mensual 8 Clases",
+    "cantidadClases": 8,
+    "precio": 25000,
+    "vigenciaMeses": 1
+  }
+}
+
+tests {
+  test("status code is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  if (res.body && res.body.id) {
+    bru.setVar("planId", res.body.id);
+  }
+}

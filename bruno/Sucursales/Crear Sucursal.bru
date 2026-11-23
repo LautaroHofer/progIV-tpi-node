@@ -1,0 +1,32 @@
+meta {
+  name: Crear Sucursal
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/sucursales
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "nombre": "Sucursal Centro",
+    "direccion": "Av. 9 de Julio 100",
+    "zonaHoraria": "America/Argentina/Buenos_Aires"
+  }
+}
+
+tests {
+  test("status code is 201", function() {
+    expect(res.getStatus()).to.equal(201);
+  });
+  if (res.body && res.body.id) {
+    bru.setVar("sucursalId", res.body.id);
+  }
+}
