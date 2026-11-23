@@ -2,12 +2,15 @@ import { db } from "../db/conexion.js";
 
 const COLECCION_PLANES = "planes";
 
+// Colecciones que podrían referenciar un plan (activar cuando esos módulos existan)
+const COLECCIONES_CON_REFERENCIAS = ["alumnos", "creditos"];
+
 // Crear un nuevo plan
-export async function crearPlan({ nombre, cantidadClases, precio, vigenciaMeses }) {
+export async function crearPlan({ nombre, cantidadClases, precio, vigenciaMeses }, dbInyectado = db) {
   const nombreLimpio = nombre.trim();
 
   // verificar que no exista otro plan con el mismo nombre
-  const existente = await db
+  const existente = await dbInyectado
     .collection(COLECCION_PLANES)
     .where("nombre", "==", nombreLimpio)
     .limit(1)
@@ -27,13 +30,13 @@ export async function crearPlan({ nombre, cantidadClases, precio, vigenciaMeses 
     creadoEn: new Date().toISOString(),
   };
 
-  const docRef = await db.collection(COLECCION_PLANES).add(nuevoPlan);
+  const docRef = await dbInyectado.collection(COLECCION_PLANES).add(nuevoPlan);
   return { id: docRef.id, ...nuevoPlan };
 }
 
 // Listar todos los planes
-export async function listarPlanes() {
-  const snapshot = await db.collection(COLECCION_PLANES).get();
+export async function listarPlanes(dbInyectado = db) {
+  const snapshot = await dbInyectado.collection(COLECCION_PLANES).get();
   return snapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
@@ -41,8 +44,8 @@ export async function listarPlanes() {
 }
 
 // Obtener un plan por ID
-export async function obtenerPlanPorId(id) {
-  const doc = await db.collection(COLECCION_PLANES).doc(id).get();
+export async function obtenerPlanPorId(id, dbInyectado = db) {
+  const doc = await dbInyectado.collection(COLECCION_PLANES).doc(id).get();
   if (!doc.exists) {
     const error = new Error("Plan no encontrado");
     error.statusCode = 404;
@@ -52,8 +55,8 @@ export async function obtenerPlanPorId(id) {
 }
 
 // Actualizar un plan existente
-export async function actualizarPlan(id, { nombre, cantidadClases, precio, vigenciaMeses }) {
-  const docRef = db.collection(COLECCION_PLANES).doc(id);
+export async function actualizarPlan(id, { nombre, cantidadClases, precio, vigenciaMeses }, dbInyectado = db) {
+  const docRef = dbInyectado.collection(COLECCION_PLANES).doc(id);
   const doc = await docRef.get();
 
   if (!doc.exists) {
@@ -66,7 +69,7 @@ export async function actualizarPlan(id, { nombre, cantidadClases, precio, vigen
 
   // si cambia el nombre, verificar que no esté ocupado por otro plan
   if (doc.data().nombre !== nombreLimpio) {
-    const ocupado = await db
+    const ocupado = await dbInyectado
       .collection(COLECCION_PLANES)
       .where("nombre", "==", nombreLimpio)
       .limit(1)
@@ -91,9 +94,29 @@ export async function actualizarPlan(id, { nombre, cantidadClases, precio, vigen
   return { id, ...doc.data(), ...datosActualizados };
 }
 
+// Verificar que el plan no tenga referencias activas antes de eliminarlo
+async function verificarReferenciasPlan(id, dbInyectado) {
+  // Por ahora no hay módulos que referencien planes (créditos, inscripciones, etc.).
+  // Cuando se implementen, descomentar y ajustar las colecciones correspondientes.
+  /*
+  for (const coleccion of COLECCIONES_CON_REFERENCIAS) {
+    const snap = await dbInyectado
+      .collection(coleccion)
+      .where("planId", "==", id)
+      .limit(1)
+      .get();
+    if (!snap.empty) {
+      const error = new Error(`No se puede eliminar: el plan está en uso por ${coleccion}`);
+      error.statusCode = 409;
+      throw error;
+    }
+  }
+  */
+}
+
 // Eliminar un plan por ID
-export async function eliminarPlan(id) {
-  const docRef = db.collection(COLECCION_PLANES).doc(id);
+export async function eliminarPlan(id, dbInyectado = db) {
+  const docRef = dbInyectado.collection(COLECCION_PLANES).doc(id);
   const doc = await docRef.get();
 
   if (!doc.exists) {
@@ -101,6 +124,9 @@ export async function eliminarPlan(id) {
     error.statusCode = 404;
     throw error;
   }
+
+  // Verificar que no haya referencias activas antes de eliminar
+  await verificarReferenciasPlan(id, dbInyectado);
 
   await docRef.delete();
   return { mensaje: "Plan eliminado correctamente" };
