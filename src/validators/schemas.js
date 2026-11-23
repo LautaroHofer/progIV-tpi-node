@@ -28,4 +28,16 @@ export const schemas = {
     capacidad: Joi.number().integer().min(1).required(),
     equipamiento: Joi.string().trim().max(150).allow('').optional(),
   }),
+
+  registro: Joi.object({
+    nombre: Joi.string().trim().min(1).max(100).required(),
+    email: Joi.string().trim().email().required(),
+    password: Joi.string().min(6).max(100).required(),
+    rol: Joi.string().valid('admin', 'recepcionista', 'profesor', 'alumno').optional(),
+  }),
+
+  login: Joi.object({
+    email: Joi.string().trim().email().required(),
+    password: Joi.string().min(1).max(100).required(),
+  }),
 };

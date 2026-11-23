@@ -1,5 +1,6 @@
 import express from 'express';
 import rutasAlumnos from './routes/rutasAlumnos.js';
+import rutasAuth from './routes/rutasAuth.js';
 import rutasPlanes from './routes/rutasPlanes.js';
 import rutasSucursales from './routes/rutasSucursales.js';
 import rutasSalas from './routes/rutasSalas.js';
@@ -18,6 +19,7 @@ export function crearApp() {
   });
 
   app.use('/api/alumnos', rutasAlumnos);
+  app.use('/api/auth', rutasAuth);
   app.use('/api/planes', rutasPlanes);
   app.use('/api/sucursales', rutasSucursales);
   app.use('/api/salas', rutasSalas);
