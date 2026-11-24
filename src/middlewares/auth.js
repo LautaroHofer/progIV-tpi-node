@@ -99,3 +99,40 @@ export function requierePermiso(permisoRequerido) {
     return next();
   };
 }
+
+/**
+ * Middleware de autorización a nivel de recurso (anti-IDOR).
+ * Permite el acceso si el usuario tiene un rol privilegiado o si el recurso
+ * solicitado coincide con su propio identificador (sub o alumnoId en el JWT).
+ * Debe usarse después de requiereAuth.
+ */
+export function requierePropietarioORol(
+  nombreParametro,
+  rolesPrivilegiados = ['admin', 'recepcionista']
+) {
+  const roles = new Set(rolesPrivilegiados);
+
+  return (req, res, next) => {
+    const usuario = req.usuario;
+
+    if (!usuario) {
+      return res.status(401).json({ error: 'Usuario no autenticado' });
+    }
+
+    if (usuario.rol && roles.has(usuario.rol)) {
+      return next();
+    }
+
+    const idRecurso = req.params?.[nombreParametro];
+    const idUsuario = usuario.alumnoId || usuario.sub;
+
+    if (!idRecurso || !idUsuario || idRecurso !== idUsuario) {
+      return res.status(403).json({
+        error: 'No tenés permiso para acceder al recurso de otro usuario',
+        codigo: 'PROHIBIDO',
+      });
+    }
+
+    return next();
+  };
+}

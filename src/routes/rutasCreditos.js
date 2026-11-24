@@ -1,5 +1,5 @@
 import express from 'express';
-import { requiereAuth, requiereRol } from '../middlewares/auth.js';
+import { requiereAuth, requiereRol, requierePropietarioORol } from '../middlewares/auth.js';
 import { validarEsquema } from '../middlewares/validacion.js';
 import {
   obtenerSaldo,
@@ -11,10 +11,10 @@ import {
 
 const router = express.Router();
 
-router.get('/:alumnoId', requiereAuth, obtenerSaldo);
-router.get('/:alumnoId/historial', requiereAuth, obtenerHistorial);
+router.get('/:alumnoId', requiereAuth, requierePropietarioORol('alumnoId'), obtenerSaldo);
+router.get('/:alumnoId/historial', requiereAuth, requierePropietarioORol('alumnoId'), obtenerHistorial);
 router.post('/:alumnoId/agregar', requiereAuth, requiereRol(['admin', 'recepcionista']), validarEsquema('creditoAgregar'), agregarCreditos);
-router.post('/:alumnoId/descontar', requiereAuth, requiereRol(['admin', 'recepcionista', 'alumno']), validarEsquema('creditoDescontar'), descontarCreditos);
-router.post('/:alumnoId/devolver', requiereAuth, requiereRol(['admin', 'recepcionista', 'alumno']), validarEsquema('creditoDevolver'), devolverCreditos);
+router.post('/:alumnoId/descontar', requiereAuth, requiereRol(['admin', 'recepcionista', 'alumno']), requierePropietarioORol('alumnoId'), validarEsquema('creditoDescontar'), descontarCreditos);
+router.post('/:alumnoId/devolver', requiereAuth, requiereRol(['admin', 'recepcionista', 'alumno']), requierePropietarioORol('alumnoId'), validarEsquema('creditoDevolver'), devolverCreditos);
 
 export default router;
