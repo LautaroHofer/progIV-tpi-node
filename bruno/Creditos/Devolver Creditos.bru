@@ -1,0 +1,30 @@
+meta {
+  name: Devolver Creditos
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/creditos/:alumnoId/devolver
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Idempotency-Key: dev-demo-001
+}
+
+params:path {
+  alumnoId: {{alumnoId}}
+}
+
+body:json {
+  {
+    "cantidad": 1,
+    "motivo": "Cancelacion dentro de ventana"
+  }
+}

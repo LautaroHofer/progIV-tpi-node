@@ -1,0 +1,26 @@
+meta {
+  name: Agregar Creditos
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/creditos/:alumnoId/agregar
+  body: json
+  auth: bearer
+}
+
+params:path {
+  alumnoId: {{alumnoId}}
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "cantidad": 8,
+    "motivo": "Plan Mensual 8 Clases"
+  }
+}

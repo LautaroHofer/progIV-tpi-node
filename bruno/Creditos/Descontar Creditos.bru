@@ -1,0 +1,30 @@
+meta {
+  name: Descontar Creditos
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/creditos/:alumnoId/descontar
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+headers {
+  Idempotency-Key: desc-demo-001
+}
+
+params:path {
+  alumnoId: {{alumnoId}}
+}
+
+body:json {
+  {
+    "cantidad": 1,
+    "motivo": "Reserva de clase"
+  }
+}
