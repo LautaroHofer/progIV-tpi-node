@@ -53,13 +53,13 @@ export const schemas = {
 
   creditoAgregar: Joi.object({
     cantidad: Joi.number().integer().positive().required(),
-    motivo: Joi.string().trim().max(200).allow('').optional(),
+    motivo: Joi.string().trim().min(1).max(200).required(),
     fechaVencimiento: Joi.string().isoDate().optional(),
   }),
 
   creditoDescontar: Joi.object({
     cantidad: Joi.number().integer().positive().required(),
-    motivo: Joi.string().trim().max(200).allow('').optional(),
+    motivo: Joi.string().trim().min(1).max(200).required(),
   }),
 
   creditoDevolver: Joi.object({
