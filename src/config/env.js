@@ -93,6 +93,10 @@ export const config = {
   port: Number(process.env.PORT || 3000),
   jwtSecret: process.env.JWT_SECRET || 'dev_secret',
   pythonApiUrl: process.env.PYTHON_API_URL || 'http://localhost:8000',
+  corsOrigins: (process.env.CORS_ORIGINS || 'http://localhost:3000,http://localhost:5173')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean),
   firebase: {
     projectId:
       process.env.FB_PROJECT_ID ||
