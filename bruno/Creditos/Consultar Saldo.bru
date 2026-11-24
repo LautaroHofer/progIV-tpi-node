@@ -1,0 +1,19 @@
+meta {
+  name: Consultar Saldo
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/creditos/:alumnoId
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+params:path {
+  alumnoId: {{alumnoId}}
+}

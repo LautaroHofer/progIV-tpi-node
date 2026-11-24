@@ -1,0 +1,19 @@
+meta {
+  name: Historial Creditos
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/creditos/:alumnoId/historial
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+params:path {
+  alumnoId: {{alumnoId}}
+}
