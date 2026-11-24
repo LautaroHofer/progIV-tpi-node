@@ -9,10 +9,19 @@ import rutasSucursales from './routes/rutasSucursales.js';
 import rutasSalas from './routes/rutasSalas.js';
 import { manejadorErrores } from './middlewares/error.js';
 import { middlewareLogger, obtenerCorrelationId } from './middlewares/logger.js';
+import {
+  cabecerasSeguridad,
+  corsRestringido,
+  bloquearPrototypePollution,
+} from './middlewares/seguridad.js';
 
 export function crearApp() {
   const app = express();
-  app.use(express.json());
+  app.disable('x-powered-by');
+  app.use(cabecerasSeguridad);
+  app.use(corsRestringido);
+  app.use(express.json({ limit: '100kb' }));
+  app.use(bloquearPrototypePollution);
   app.use(middlewareLogger);
 
   app.get('/health', (req, res) => {
